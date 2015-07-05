@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>QTime!</title>
+	<script type="text/javascript">
+		PrimeFaces.locales['de'] = {
+			closeText : 'Schließen',
+			prevText : 'Zurück',
+			nextText : 'Weiter',
+			monthNames : [ 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+					'Juli', 'August', 'September', 'Oktober', 'November',
+					'Dezember' ],
+			monthNamesShort : [ 'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
+					'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+			dayNames : [ 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+					'Donnerstag', 'Freitag', 'Samstag' ],
+			dayNamesShort : [ 'Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam' ],
+			dayNamesMin : [ 'S', 'M', 'D', 'M ', 'D', 'F ', 'S' ],
+			weekHeader : 'Woche',
+			firstDay : 1,
+			isRTL : false,
+			showMonthAfterYear : false,
+			yearSuffix : '',
+			timeOnlyTitle : 'Nur Zeit',
+			timeText : 'Zeit',
+			hourText : 'Stunde',
+			minuteText : 'Minute',
+			secondText : 'Sekunde',
+			currentText : 'Aktuelles Datum',
+			ampm : false,
+			month : 'Monat',
+			week : 'Woche',
+			day : 'Tag',
+			allDayText : 'Ganzer Tag'
+		};
+	</script>
+</h:head>
+
+<h:body>
+	<p:toolbar>
+		<f:facet name="left">
+			<p:calendar id="day" value="#{viewTermineMBean.today}"
+				pattern="dd.MM.yyyy HH:mm" showOn="button" locale="de" />
+			<span class="ui-separator"> <span
+				class="ui-icon ui-icon-grip-dotted-vertical" />
+			</span>
+			<p:commandButton type="button" value="Rückgängig"
+				icon="ui-icon-arrowrefresh-1-w" />
+			<p:commandButton type="button" value="Wiederholen"
+				icon="ui-icon-arrowrefresh-1-e" />
+			<span class="ui-separator"> <span
+				class="ui-icon ui-icon-grip-dotted-vertical" />
+			</span>
+			<p:commandButton type="button" value="Voriger"
+				icon="ui-icon-seek-first" />
+			<p:commandButton type="button" value="Nächster"
+				icon="ui-icon-seek-end" />
+			<span class="ui-separator"> <span
+				class="ui-icon ui-icon-grip-dotted-vertical" />
+			</span>
+			<p:commandButton type="button" value="Notfall" icon="ui-icon-heart" />
+			<p:commandButton type="button" value="Benachrichtigen"
+				icon="ui-icon-signal-diag" />
+			<span class="ui-separator"> <span
+				class="ui-icon ui-icon-grip-dotted-vertical" />
+			</span>
+			<p:commandButton type="button" title="Einstellungen"
+				icon="ui-icon-gear" />
+		</f:facet>
+	</p:toolbar>
+	<p:separator />
+
+	<p:dataTable value="#{viewTermineMBean.termine}" var="termin"
+		resizableColumns="true" scrollable="true" scrollHeight="500">
+		<p:column sortBy="#{termin.terminId}" style="width: 5%;">
+			<f:facet name="header">
+				<h:outputText value="ID"></h:outputText>
+			</f:facet>
+			<h:outputText value="#{termin.terminId}"></h:outputText>
+		</p:column>
+		<p:column sortBy="#{termin.terminPlan}" style="width:12%">
+			<f:facet name="header">
+				<h:outputText value="Termin (Plan)"></h:outputText>
+			</f:facet>
+			<!-- 			<p:calendar id="time" value="#{termin.terminPlan}" pattern="HH:mm" -->
+			<!-- 				locale="de" timeOnly="true" size="4" /> -->
+			<h:outputText value="#{termin.terminPlan}">
+				<f:convertDateTime locale="de" pattern="HH:mm"
+					timeZone="Europe/Berlin" />
+			</h:outputText>
+		</p:column>
+		<p:column sortBy="#{termin.terminIst}" style="width:12%">
+			<f:facet name="header">
+				<h:outputText value="Termin (Ist)"></h:outputText>
+			</f:facet>
+			<p:calendar id="time" value="#{termin.terminPlan}" pattern="HH:mm"
+				locale="de" timeOnly="true" size="5" />
+		</p:column>
+		<p:column sortBy="#{termin.dauer}" style="width:8%">
+			<f:facet name="header">
+				<h:outputText value="Dauer"></h:outputText>
+			</f:facet>
+			<p:spinner id="step" value="#{termin.dauer}" stepFactor="5" min="5"
+				max="120" size="2" />
+		</p:column>
+		<p:column sortBy="#{termin.delay}">
+			<f:facet name="header">
+				<h:outputText value="Verzögerung"></h:outputText>
+			</f:facet>
+			<h:outputText
+				value="#{termin.status.id == 5 ? '- ' : (termin.delay > 0 ? '+ ' : '')}" />
+			<h:outputText
+				value="#{termin.status.id != 5 ? (termin.delay > 0 ? termin.delay : '') : termin.dauer }" />
+			<h:outputText
+				value="#{termin.status.id != 5 ? (termin.delay > 0 ? 'min' : '') : 'min'}" />
+		</p:column>
+		<p:column style="width: 8%;" sortBy="#{termin.prio}">
+			<f:facet name="header">
+				<h:outputText value="Prio" />
+			</f:facet>
+			<p:spinner id="prio" value="#{termin.prio}" stepFactor="1" min="1"
+				max="5" size="1" />
+		</p:column>
+		<p:column sortBy="#{termin.patient}">
+			<f:facet name="header">
+				<h:outputText value="Patient" />
+			</f:facet>
+			<h:outputLink id="grow" value="#">
+				<h:outputText
+					value="#{termin.patient.vorname} #{termin.patient.nachname}" />
+			</h:outputLink>
+			<p:tooltip id="toolTipGrow" for="grow" showEffect="clip"
+				hideEffect="clip" trackMouse="true">
+				<p:panelGrid columns="2">
+					<h:outputText value="Telefon:" />
+					<h:outputText value="#{termin.patient.telNr}" />
+
+					<h:outputText value="Email:" />
+					<h:outputText value="#{termin.patient.email}" />
+
+					<h:outputText value="Bewertung:" />
+					<h:outputText value="#{termin.patient.rating}" />
+				</p:panelGrid>
+			</p:tooltip>
+		</p:column>
+		<p:column style="width: 20%;background-color: #{termin.color}"
+			sortBy="#{termin.status}">
+			<f:facet name="header">
+				<h:outputText value="Status"></h:outputText>
+			</f:facet>
+			<p:selectOneMenu id="status" value="#{termin.status}">
+				<f:selectItems value="#{viewTermineMBean.stati}" var="status"
+					itemLabel="#{status.label}" itemValue="#{status}" />
+			</p:selectOneMenu>
+		</p:column>
+	</p:dataTable>
+</h:body>
+</html>
